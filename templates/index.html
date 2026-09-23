@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>House Price Prediction</h1>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="POST">
+            <div class="form-group">
+                <label>Total Sqft:</label>
+                <input type="number" name="total_sqft" required>
+            </div>
+            <div class="form-group">
+                <label>Bathroom:</label>
+                <input type="number" name="bath" required>
+            </div>
+            <div class="form-group">
+                <label>Balcony:</label>
+                <input type="number" name="balcony" required>
+            </div>
+            <div class="form-group">
+                <label>BHK:</label>
+                <input type="number" name="bhk" required>
+            </div>
+            <div class="form-group">
+                <label>Area Type:</label>
+                <select name="area_type" required>
+                    <option value="Super built-up  Area">Super built-up Area</option>
+                    <option value="Built-up  Area">Built-up Area</option>
+                    <option value="Plot  Area">Plot Area</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Location:</label>
+                <input list="locations"
+                       name="location"
+                       required
+                       placeholder="Search location">
+                <datalist id="locations">
+                    {% for location in locations %}
+                        <option value="{{ location }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+            <button type="submit">Predict Price</button>
+        </form>
+        {% if prediction %}
+            <div class="prediction">
+                <h2>Predicted Price: ₹{{ prediction }} Lakhs</h2>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
