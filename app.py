@@ -33,6 +33,7 @@ def home():
           # Step 5 : Get User Inputs
 
         # Step 12 : Input Validation
+        print("=== POST REQUEST STARTED ===", flush=True)
 
         total_sqft = float(request.form["total_sqft"])
         bath = int(request.form["bath"])
@@ -79,16 +80,17 @@ def home():
         # Step 7 : Scale the input
         input_df = pd.DataFrame([input_data], columns=feature_columns)
         input_scaled = scaler.transform(input_df)
+        print("=== BEFORE PREDICTION ===", flush=True)
 
         # Step 8 : Make Prediction
         print("POST request received")
-
+        
         # Make prediction
         prediction = model(input_scaled, training=False).numpy()
         predicted_price = float(prediction[0][0])
         
         print("Prediction completed:", predicted_price)
-
+        print("=== PREDICTION COMPLETED ===", predicted_price, flush=True)
         # Step 9 : Send prediction to HTML
 
         return render_template(
