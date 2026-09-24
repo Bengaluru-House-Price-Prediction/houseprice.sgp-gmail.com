@@ -46,9 +46,11 @@ Bengaluru-House-Price-Prediction/
 │
 ├── app.py
 ├── requirements.txt
-├── ann_model.keras
-├── feature_columns.pkl
-├── scaler.pkl
+│
+├── models/
+│   ├── ann_model.keras
+│   ├── feature_columns.pkl
+│   └── scaler.pkl
 │
 ├── templates/
 │   └── index.html
