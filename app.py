@@ -99,4 +99,4 @@ def home():
     )
 #Step 4 : Run Application
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
