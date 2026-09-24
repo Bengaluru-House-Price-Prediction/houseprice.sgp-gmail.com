@@ -86,8 +86,15 @@ def home():
         print("POST request received")
         
         # Make prediction
-        prediction = model(input_scaled, training=False).numpy()
+        print("=== BEFORE PREDICTION ===", flush=True)
+
+        prediction = model.predict(input_scaled, verbose=1)
+
+        print("=== RAW PREDICTION ===", prediction, flush=True)
+
         predicted_price = float(prediction[0][0])
+
+        print("=== PREDICTION COMPLETED ===", predicted_price, flush=True)
         
         print("Prediction completed:", predicted_price)
         print("=== PREDICTION COMPLETED ===", predicted_price, flush=True)
