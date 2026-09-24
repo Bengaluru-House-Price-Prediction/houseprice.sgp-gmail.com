@@ -80,19 +80,20 @@ def home():
         # Step 7 : Scale the input
         input_df = pd.DataFrame([input_data], columns=feature_columns)
         input_scaled = scaler.transform(input_df)
+
         print("=== BEFORE PREDICTION ===", flush=True)
+        print("MODEL INPUT SHAPE:", input_scaled.shape, flush=True)
+        print("MODEL EXPECTED SHAPE:", model.input_shape, flush=True)
+        print("MODEL OUTPUT SHAPE:", model.output_shape, flush=True)
+        print("MODEL LOADED SUCCESSFULLY", flush=True)
 
-        # Step 8 : Make Prediction
-        print("POST request received")
-        
-        # Make prediction
-        print("=== BEFORE PREDICTION ===", flush=True)
+        prediction = model.predict(input_scaled, verbose=0)
 
-        prediction = model.predict(input_scaled, verbose=1)
-
-        print("=== RAW PREDICTION ===", prediction, flush=True)
+        print("RAW PREDICTION:", prediction, flush=True)
 
         predicted_price = float(prediction[0][0])
+
+        print("=== PREDICTION COMPLETED ===", predicted_price, flush=True)
 
         print("=== PREDICTION COMPLETED ===", predicted_price, flush=True)
         
