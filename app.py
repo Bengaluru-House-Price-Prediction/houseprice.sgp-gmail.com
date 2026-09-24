@@ -82,9 +82,12 @@ def home():
 
         # Step 8 : Make Prediction
         print("POST request received")
+
+        # Make prediction
+        prediction = model(input_scaled, training=False).numpy()
+        predicted_price = float(prediction[0][0])
         
-        prediction = model.predict(input_scaled, verbose=0)
-        predicted_price = prediction[0][0]
+        print("Prediction completed:", predicted_price)
 
         # Step 9 : Send prediction to HTML
 
