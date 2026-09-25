@@ -1,60 +1,512 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>House Price Prediction</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>House Price Prediction | Bengaluru</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <div class="container">
-        <h1>House Price Prediction</h1>
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-        <form method="POST">
-            <div class="form-group">
-                <label>Total Sqft:</label>
-                <input type="number" name="total_sqft" required>
-            </div>
-            <div class="form-group">
-                <label>Bathroom:</label>
-                <input type="number" name="bath" required>
-            </div>
-            <div class="form-group">
-                <label>Balcony:</label>
-                <input type="number" name="balcony" required>
-            </div>
-            <div class="form-group">
-                <label>BHK:</label>
-                <input type="number" name="bhk" required>
-            </div>
-            <div class="form-group">
-                <label>Area Type:</label>
-                <select name="area_type" required>
-                    <option value="Super built-up  Area">Super built-up Area</option>
-                    <option value="Built-up  Area">Built-up Area</option>
-                    <option value="Plot  Area">Plot Area</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Location:</label>
-                <input list="locations"
-                       name="location"
-                       required
-                       placeholder="Search location">
-                <datalist id="locations">
-                    {% for location in locations %}
-                        <option value="{{ location }}">
-                    {% endfor %}
-                </datalist>
-            </div>
-            <button type="submit">Predict Price</button>
-        </form>
-        {% if prediction %}
-            <div class="prediction">
-                <h2>Predicted Price: ₹{{ prediction }} Lakhs</h2>
-            </div>
-        {% endif %}
+
+    <!-- =========================
+         MAIN PAGE
+    ========================== -->
+
+    <div class="page-wrapper">
+
+        <div class="container">
+
+            <!-- =========================
+                 HEADER
+            ========================== -->
+
+            <header class="hero-section">
+
+                <div class="hero-icon">
+                    🏠
+                </div>
+
+                <h1>House Price Prediction</h1>
+
+                <p class="subtitle">
+                    Bengaluru House Price Prediction using Machine Learning & Deep Learning
+                </p>
+
+                <div class="header-line"></div>
+
+            </header>
+
+
+            <!-- =========================
+                 PREDICTION FORM
+            ========================== -->
+
+            <section class="prediction-section">
+
+                <div class="section-heading">
+                    <h2>Property Details</h2>
+
+                    <p>
+                        Enter the property details below to estimate the house price.
+                    </p>
+                </div>
+
+
+                {% if error %}
+                    <div class="error-box">
+                        <span>⚠</span>
+                        <span>{{ error }}</span>
+                    </div>
+                {% endif %}
+
+
+                <form method="POST"
+                      onsubmit="handlePrediction(this)"
+                      autocomplete="off">
+
+
+                    <!-- Total Sqft -->
+
+                    <div class="form-group">
+
+                        <label for="total_sqft">
+                            Total Area
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <input
+                                type="number"
+                                id="total_sqft"
+                                name="total_sqft"
+                                min="300"
+                                step="0.01"
+                                placeholder="Enter total area in sqft"
+                                required>
+
+                            <span class="input-unit">sqft</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Bathroom -->
+
+                    <div class="form-group">
+
+                        <label for="bath">
+                            Bathroom
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="number"
+                            id="bath"
+                            name="bath"
+                            min="1"
+                            step="1"
+                            placeholder="Enter number of bathrooms"
+                            required>
+
+                    </div>
+
+
+                    <!-- Balcony -->
+
+                    <div class="form-group">
+
+                        <label for="balcony">
+                            Balcony
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="number"
+                            id="balcony"
+                            name="balcony"
+                            min="0"
+                            step="1"
+                            placeholder="Enter number of balconies"
+                            required>
+
+                    </div>
+
+
+                    <!-- BHK -->
+
+                    <div class="form-group">
+
+                        <label for="bhk">
+                            BHK
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="number"
+                            id="bhk"
+                            name="bhk"
+                            min="1"
+                            step="1"
+                            placeholder="Enter BHK"
+                            required>
+
+                    </div>
+
+
+                    <!-- Area Type -->
+
+                    <div class="form-group">
+
+                        <label for="area_type">
+                            Area Type
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            id="area_type"
+                            name="area_type"
+                            required>
+
+                            <!-- IMPORTANT:
+                                 Keep these exact values.
+                                 They must match the trained feature columns.
+                            -->
+
+                            <option value="Super built-up  Area">
+                                Super built-up Area
+                            </option>
+
+                            <option value="Built-up  Area">
+                                Built-up Area
+                            </option>
+
+                            <option value="Plot  Area">
+                                Plot Area
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Location -->
+
+                    <div class="form-group">
+
+                        <label for="location">
+                            Location
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            list="locations"
+                            id="location"
+                            name="location"
+                            placeholder="Search Bengaluru location"
+                            required>
+
+                        <datalist id="locations">
+
+                            {% for location in locations %}
+
+                                <option value="{{ location }}">
+
+                            {% endfor %}
+
+                        </datalist>
+
+                        <p class="field-hint">
+                            Start typing to search for a location.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Predict Button -->
+
+                    <button
+                        type="submit"
+                        class="predict-button"
+                        id="predictButton">
+
+                        <span class="button-icon">⌕</span>
+
+                        <span id="buttonText">
+                            Predict House Price
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+                <!-- =========================
+                     PREDICTION RESULT
+                ========================== -->
+
+                {% if prediction %}
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            ✓
+                        </div>
+
+                        <div class="result-content">
+
+                            <p class="result-label">
+                                Estimated Property Price
+                            </p>
+
+                            <h2>
+                                ₹{{ prediction }} Lakhs
+                            </h2>
+
+                            <p class="result-note">
+                                Estimated price based on the provided property details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- =========================
+                 PROJECT INFORMATION
+            ========================== -->
+
+            <section class="info-section">
+
+                <div class="info-card">
+
+                    <div class="info-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h3>About the Project</h3>
+
+                        <p>
+                            This project predicts the estimated price of residential
+                            properties in Bengaluru based on property characteristics
+                            such as total area, BHK, bathrooms, balcony, area type,
+                            and location.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <div class="info-icon">
+                        🤖
+                    </div>
+
+                    <div>
+
+                        <h3>How It Works</h3>
+
+                        <p>
+                            The entered property details are converted into the same
+                            feature format used during model training, scaled using
+                            the trained preprocessing pipeline, and passed to the
+                            trained Artificial Neural Network model to generate the
+                            estimated house price.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 TECHNOLOGIES
+            ========================== -->
+
+            <section class="technology-section">
+
+                <div class="section-heading center">
+
+                    <h2>Technologies Used</h2>
+
+                    <p>
+                        Tools and technologies used to develop this project.
+                    </p>
+
+                </div>
+
+
+                <div class="technology-grid">
+
+                    <div class="technology-card">
+                        <strong>Python</strong>
+                        <span>Programming</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>Flask</strong>
+                        <span>Web Application</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>TensorFlow</strong>
+                        <span>Deep Learning</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>Keras</strong>
+                        <span>ANN Model</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>Scikit-learn</strong>
+                        <span>Preprocessing</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>HTML & CSS</strong>
+                        <span>Frontend</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>Pandas</strong>
+                        <span>Data Processing</span>
+                    </div>
+
+                    <div class="technology-card">
+                        <strong>Render</strong>
+                        <span>Deployment</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 DEVELOPERS
+            ========================== -->
+
+            <section class="developers-section">
+
+                <div class="section-heading center">
+
+                    <h2>Project Developers</h2>
+
+                    <p>
+                        Developed as a collaborative AIML project.
+                    </p>
+
+                </div>
+
+
+                <div class="developers-grid">
+
+                    <div class="developer-card">
+
+                        <div class="developer-avatar">
+                            01
+                        </div>
+
+                        <h3>Ravi Patel</h3>
+
+                        <p>AIML Project Developer</p>
+
+                    </div>
+
+
+                    <div class="developer-card">
+
+                        <div class="developer-avatar">
+                            02
+                        </div>
+
+                        <h3>Kenil Patel</h3>
+
+                        <p>AIML Project Developer</p>
+
+                    </div>
+
+
+                    <div class="developer-card">
+
+                        <div class="developer-avatar">
+                            03
+                        </div>
+
+                        <h3>Vishnu Jikadara</h3>
+
+                        <p>AIML Project Developer</p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================== -->
+
+            <footer>
+
+                <div class="footer-line"></div>
+
+                <p>
+                    Bengaluru House Price Prediction
+                </p>
+
+                <span>
+                    AIML Project • House Price Prediction
+                </span>
+
+            </footer>
+
+        </div>
+
     </div>
+
+
+    <!-- =========================
+         SAFE BUTTON SCRIPT
+    ========================== -->
+
+    <script>
+
+        function handlePrediction(form) {
+
+            const button = document.getElementById("predictButton");
+            const buttonText = document.getElementById("buttonText");
+
+            if (button && buttonText) {
+
+                button.disabled = true;
+
+                buttonText.innerText = "Predicting...";
+
+                button.classList.add("loading");
+
+            }
+
+        }
+
+    </script>
 
 </body>
 </html>
